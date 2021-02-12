@@ -40,7 +40,7 @@ public class Chamador {
         return this;
     }
 
-    private void play(String... files) throws JavaLayerException {
+    private void play(List<String> files) throws JavaLayerException {
         for (String f : files) {
             createPlayer(f).play();
         }
@@ -70,9 +70,8 @@ public class Chamador {
             //para chamar guiche
             criarListaLetra(list, guiche);
         }
-
         try {
-            play(list.toArray(new String[0]));
+            play(list);
         } catch (JavaLayerException e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
