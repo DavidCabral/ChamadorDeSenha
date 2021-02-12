@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Chamador {
-
     private Voz voz;
     private String senha;
     private String guiche;
@@ -41,26 +40,17 @@ public class Chamador {
         return this;
     }
 
-    private void playList(List<Player> list) throws JavaLayerException {
-        for (Player p : list) {
-            p.play();
-        }
-    }
-
     private void play(String... files) throws JavaLayerException {
-        final List<Player> list = new ArrayList<>();
         for (String f : files) {
-            list.add(createPlayer(f));
+            createPlayer(f).play();
         }
-        playList(list);
     }
 
     public void chamar() {
 
         if (senha == null || senha.isEmpty()) {
-            throw new RuntimeException("Informe a Senha");
+            throw new RuntimeException("A Senha não foi informada!");
         }
-
 
         List<String> list = new ArrayList<>();
         if (alerta != null) {
@@ -69,15 +59,14 @@ public class Chamador {
         }
 
         //adiciona a senha
-        list.add(getCaminho(voz, "senha"));
+        list.add(getCaminho("senha"));
 
         //para chamar senha
         criarListaLetra(list, senha);
 
-
         if (guiche != null && !guiche.isEmpty()) {
             //adiciona o guiche
-            list.add(getCaminho(voz, "guiche"));
+            list.add(getCaminho("guiche"));
             //para chamar guiche
             criarListaLetra(list, guiche);
         }
@@ -94,18 +83,16 @@ public class Chamador {
     private void criarListaLetra(List<String> list, String senha) {
         String[] arr = senha.split("");
         for (String letra : arr) {
-            list.add(getCaminho(voz, letra));
+            list.add(getCaminho(letra));
         }
     }
 
-
-    private String getCaminho(Voz voz, String v) {
+    private String getCaminho(String v) {
         return voz.getPath() + v.toLowerCase();
     }
 
     private Player createPlayer(String f) throws JavaLayerException {
         return new Player(getClass().getResourceAsStream("/media/" + f + ".mp3"));
     }
-
 
 }
