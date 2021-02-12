@@ -1,48 +1,28 @@
 package com.github.david;
 
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Chamar {
 
-    private void playList(List<MediaPlayer> list) {
-        MediaPlayer player = list.get(0);
-        player.play();
-        player.setOnError(() -> {
-            System.out.println("Media error occurred: " + player.getError());
-            com.sun.javafx.application.PlatformImpl.exit();
-        });
-        player.setOnEndOfMedia(() -> {
-            try {
-                TimeUnit.SECONDS.sleep(1);
-                list.remove(0);
-                if (list.isEmpty()) {
-                    com.sun.javafx.application.PlatformImpl.exit();
-                    return;
-                }
-                playList(list);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
+    private void playList(List<Player> list) throws JavaLayerException {
+        for (Player p : list) {
+            p.play();
+        }
     }
 
-    private void play(String... files) {
-        com.sun.javafx.application.PlatformImpl.startup(() -> {
-            final List<MediaPlayer> list = new ArrayList<>();
-            for (String f : files) {
-                list.add(createPlayer(f));
-            }
-            playList(list);
-        });
+    private void play(String... files) throws JavaLayerException {
+        final List<Player> list = new ArrayList<>();
+        for (String f : files) {
+            list.add(createPlayer(f));
+        }
+        playList(list);
     }
 
-    public void senha(Alerta alerta, Voz voz, String senha, String guiche) {
+    public void senha(Alerta alerta, Voz voz, String senha, String guiche) throws JavaLayerException {
         List<String> list = new ArrayList<>();
         //adiciona o alerta
         list.add(alerta.getPath());
@@ -68,7 +48,7 @@ public class Chamar {
 
     }
 
-    public void senha(String senha, String guiche) {
+    public void senha(String senha, String guiche) throws JavaLayerException {
         senha(Alerta.AIRPORT, Voz.FEMININO, senha, guiche);
     }
 
@@ -76,10 +56,9 @@ public class Chamar {
         return voz.getPath() + v.toLowerCase();
     }
 
-    private MediaPlayer createPlayer(String f) {
-        URL resource = getClass().getResource("/media/" + f + ".mp3");
-        Media media = new Media(resource.toString());
-        return new MediaPlayer(media);
+    private Player createPlayer(String f) throws JavaLayerException {
+        return new Player(getClass().getResourceAsStream("/media/" + f + ".mp3"));
     }
+
 
 }
